@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Character Unlock Test</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <!-- phase 1: idle — comic store landing -->
+      <section id="idle" class="phase">
+        <div class="halftone"></div>
+        <div class="idle-card">
+          <div class="starburst-badge"><span>NEW!</span></div>
+          <h1 class="comic-title">CHARACTER<br />VAULT</h1>
+          <p class="tagline">Fresh drops from the 12-hero suite</p>
+          <p class="hint">▼ &nbsp;tap a hero below to unlock&nbsp; ▼</p>
+        </div>
+      </section>
+
+      <!-- phase 2: shader lines reveal + persona phrase -->
+      <section id="reveal" class="phase" hidden>
+        <canvas id="shaderCanvas"></canvas>
+        <div class="reveal-overlay">
+          <span id="phrase" class="phrase"></span>
+          <span id="unlockedTag" class="unlocked-tag">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+            Character Unlocked
+          </span>
+        </div>
+      </section>
+
+      <!-- phase 3: comic store room + name marquee + floating card -->
+      <section id="cardPhase" class="phase" hidden>
+        <div id="hero" class="hero-section">
+          <!-- full-screen washes (fixed: cover the whole viewport now) -->
+          <div class="accent-wash"></div>
+          <div class="animated-hue"></div>
+
+          <!-- comic store room scene -->
+          <div class="room">
+            <div class="room-wall"></div>
+            <div class="room-floor"></div>
+            <svg class="room-svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+              <!-- hanging lamp + light cone -->
+              <g id="lamp">
+                <line x1="720" y1="0" x2="720" y2="90" stroke="#000" stroke-width="6" />
+                <path d="M690 90 L750 90 L764 122 L676 122 Z" fill="#1c2033" stroke="#000" stroke-width="5" />
+                <circle cx="720" cy="128" r="10" fill="#ffe9a8" />
+                <polygon id="lightCone" points="720,128 480,900 960,900" fill="url(#coneGrad)" />
+              </g>
+              <defs>
+                <linearGradient id="coneGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="#fff6d8" stop-opacity="0.20" />
+                  <stop offset="1" stop-color="#fff6d8" stop-opacity="0.02" />
+                </linearGradient>
+              </defs>
+
+              <!-- comic shelf unit (left) -->
+              <g id="shelf">
+                <rect x="70" y="330" width="300" height="400" rx="8" fill="#171a2c" stroke="#000" stroke-width="6" />
+                <rect x="86" y="440" width="268" height="10" fill="#000" opacity="0.7" />
+                <rect x="86" y="570" width="268" height="10" fill="#000" opacity="0.7" />
+                <!-- row 1 comics -->
+                <g class="comics">
+                  <rect x="96"  y="360" width="52" height="76" rx="4" fill="#e05656" stroke="#000" stroke-width="4" transform="rotate(-4 122 398)" />
+                  <rect x="158" y="358" width="52" height="78" rx="4" fill="#4f8fe0" stroke="#000" stroke-width="4" />
+                  <rect x="220" y="362" width="52" height="74" rx="4" fill="#e8c34a" stroke="#000" stroke-width="4" transform="rotate(3 246 399)" />
+                  <rect x="284" y="358" width="52" height="78" rx="4" fill="#67c47d" stroke="#000" stroke-width="4" />
+                </g>
+                <!-- row 2 comics -->
+                <g class="comics">
+                  <rect x="96"  y="488" width="52" height="78" rx="4" fill="#a06fe0" stroke="#000" stroke-width="4" />
+                  <rect x="158" y="492" width="52" height="74" rx="4" fill="#e08b4f" stroke="#000" stroke-width="4" transform="rotate(-3 184 529)" />
+                  <rect x="220" y="488" width="52" height="78" rx="4" fill="#5ecccc" stroke="#000" stroke-width="4" />
+                  <rect x="284" y="490" width="52" height="76" rx="4" fill="#e05691" stroke="#000" stroke-width="4" transform="rotate(4 310 528)" />
+                </g>
+                <!-- row 3: face-out featured comic -->
+                <rect x="120" y="612" width="86" height="108" rx="6" fill="#22263d" stroke="#000" stroke-width="5" />
+                <rect x="132" y="624" width="62" height="62" rx="4" fill="var(--accent, #ffcf4d)" opacity="0.85" />
+                <rect x="230" y="618" width="60" height="100" rx="4" fill="#31365a" stroke="#000" stroke-width="4" transform="rotate(5 260 668)" />
+                <text x="212" y="770" font-family="Arial Black, sans-serif" font-size="26" font-weight="900" fill="#ffffff" opacity="0.55" text-anchor="middle" letter-spacing="4">COMICS</text>
+              </g>
+
+              <!-- posters (right wall) -->
+              <g id="posterPow" transform="rotate(4 1180 330)">
+                <rect x="1080" y="230" width="200" height="200" rx="10" fill="#ffd94a" stroke="#000" stroke-width="7" />
+                <polygon points="1180,258 1202,308 1256,310 1214,342 1230,394 1180,364 1130,394 1146,342 1104,310 1158,308" fill="#ff5a3c" stroke="#000" stroke-width="5" />
+                <text x="1180" y="340" font-family="Arial Black, sans-serif" font-size="42" font-weight="900" fill="#fff" stroke="#000" stroke-width="2" text-anchor="middle">POW!</text>
+              </g>
+              <g id="posterZap" transform="rotate(-5 1330 560)">
+                <rect x="1240" y="470" width="180" height="180" rx="10" fill="#63c7ff" stroke="#000" stroke-width="7" />
+                <text x="1330" y="580" font-family="Arial Black, sans-serif" font-size="44" font-weight="900" fill="#fff" stroke="#000" stroke-width="2" text-anchor="middle">ZAP!</text>
+              </g>
+              <!-- character poster: name only, so Indiana Jonas is allowed -->
+              <g id="posterName" transform="rotate(-3 210 235)">
+                <rect x="90" y="150" width="240" height="130" rx="10" fill="#141830" stroke="#000" stroke-width="7" />
+                <text id="posterNameText" class="font-indiana" x="210" y="235" font-size="52" fill="var(--accent, #fff)" text-anchor="middle">???</text>
+              </g>
+
+              <!-- neon OPEN sign -->
+              <g id="neonOpen" transform="rotate(2 1180 130)">
+                <rect x="1090" y="80" width="180" height="90" rx="16" fill="#0d1022" stroke="#000" stroke-width="6" />
+                <text x="1180" y="140" font-family="Arial Black, sans-serif" font-size="40" font-weight="900" fill="none" stroke="#7dffb0" stroke-width="3" text-anchor="middle">OPEN</text>
+              </g>
+
+              <!-- long box of back issues (right foreground) -->
+              <g id="longbox">
+                <rect x="1040" y="700" width="300" height="130" rx="8" fill="#d9d3c5" stroke="#000" stroke-width="6" />
+                <rect x="1040" y="700" width="300" height="34" rx="8" fill="#bfb7a4" stroke="#000" stroke-width="6" />
+                <text x="1190" y="795" font-family="Arial Black, sans-serif" font-size="26" font-weight="900" fill="#2b2b2b" text-anchor="middle">BACK ISSUES $1</text>
+              </g>
+
+              <!-- spinner rack (left foreground) -->
+              <g id="spinnerRack">
+                <line x1="470" y1="620" x2="470" y2="850" stroke="#000" stroke-width="10" />
+                <ellipse cx="470" cy="850" rx="60" ry="14" fill="#10132a" stroke="#000" stroke-width="5" />
+                <rect x="420" y="630" width="44" height="64" rx="4" fill="#e05656" stroke="#000" stroke-width="4" transform="rotate(-8 442 662)" />
+                <rect x="476" y="628" width="44" height="64" rx="4" fill="#4f8fe0" stroke="#000" stroke-width="4" transform="rotate(7 498 660)" />
+                <rect x="428" y="716" width="44" height="64" rx="4" fill="#e8c34a" stroke="#000" stroke-width="4" transform="rotate(6 450 748)" />
+                <rect x="472" y="714" width="44" height="64" rx="4" fill="#a06fe0" stroke="#000" stroke-width="4" transform="rotate(-6 494 746)" />
+              </g>
+
+              <!-- rug under the card -->
+              <ellipse id="rug" cx="720" cy="836" rx="300" ry="52" fill="var(--accent, #fff)" opacity="0.22" stroke="#000" stroke-width="5" />
+            </svg>
+
+            <!-- floating comic exclamations -->
+            <div class="floaty pow-bubble">POW!</div>
+            <div class="floaty bam-bubble">BAM!</div>
+            <div class="floaty wow-bubble">WOW!</div>
+          </div>
+
+          <!-- scaled stage: scrolling name marquee cubes -->
+          <div class="content" id="heroContent">
+            <div class="container-full">
+              <div class="cube-stage" id="cubeMain"></div>
+              <div class="cube-stage container-reflect" id="cubeReflect"></div>
+            </div>
+          </div>
+
+          <!-- energy burst + floating card (NOT scaled — stays big on mobile) -->
+          <div class="card-slot">
+            <div class="burst"></div>
+            <div class="card-float">
+              <div class="glare-card" id="glareCard">
+                <div class="glare-card__inner">
+                  <div class="glare-card__layer glare-card__content">
+                    <img id="cardImage" alt="" draggable="false" />
+                  </div>
+                  <div class="glare-card__layer glare-card__glare"></div>
+                  <div class="glare-card__layer glare-card__foil"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="big-name-wrap">
+          <span id="bigName" class="big-name font-indiana"></span>
+        </div>
+      </section>
+
+      <!-- character switcher pill (always visible) -->
+      <nav id="pill" class="pill" aria-label="Character switcher">
+        <button id="randomBtn" class="pill-sparkle" aria-label="Random character">✨</button>
+        <div class="pill-divider"></div>
+        <div id="pillScroll" class="pill-scroll"></div>
+      </nav>
+
+      <!-- sound toggle -->
+      <button id="muteBtn" class="mute-btn" aria-label="Toggle sound">🔊</button>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

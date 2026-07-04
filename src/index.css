@@ -1,0 +1,295 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* Indiana Jonas — ONLY used for displaying character names */
+@font-face {
+  font-family: "Indiana Jonas";
+  src: url("/fonts/indiana-jonas/Indiana-Jonas-48p.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Indiana Jonas";
+  src: url("/fonts/indiana-jonas/Indiana-Jonas-48ip.otf") format("opentype");
+  font-weight: normal;
+  font-style: italic;
+  font-display: swap;
+}
+
+.font-indiana {
+  font-family: "Indiana Jonas", cursive;
+}
+
+body {
+  margin: 0;
+  background: #05060f;
+  color: white;
+  overflow-x: hidden;
+}
+
+/* ---- keyframes from the background animation prompt ---- */
+
+@keyframes left {
+  100% {
+    margin-left: -54000px;
+  }
+}
+
+@keyframes back {
+  100% {
+    margin-left: -54870px;
+  }
+}
+
+@keyframes right {
+  100% {
+    margin-left: -55740px;
+  }
+}
+
+@keyframes filter-animation {
+  0%,
+  100% {
+    filter: hue-rotate(0deg);
+  }
+  50% {
+    filter: hue-rotate(100deg);
+  }
+}
+
+@keyframes zoom-in {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(2.5);
+  }
+}
+
+@keyframes blur {
+  0% {
+    filter: blur(0px);
+  }
+  100% {
+    filter: blur(3px);
+  }
+}
+
+@keyframes brightness {
+  0% {
+    filter: brightness(1) contrast(1);
+  }
+  100% {
+    filter: brightness(0.8) contrast(1.3);
+  }
+}
+
+@keyframes text-glow {
+  0%,
+  100% {
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+  }
+  50% {
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+  }
+}
+
+/* subtle float for the unlocked character card */
+@keyframes card-float {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(-0.5deg);
+  }
+  50% {
+    transform: translateY(-14px) rotate(0.5deg);
+  }
+}
+
+.animate-card-float {
+  animation: card-float 4.5s ease-in-out infinite;
+}
+
+/* fade/scale-in for phase transitions */
+@keyframes reveal-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-reveal-pop {
+  animation: reveal-pop 700ms cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 600ms ease-out both;
+}
+
+/* ---- unlock background (adapted 3D poem animation) ---- */
+
+.hero-section {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(
+    ellipse at 50% 40%,
+    color-mix(in srgb, var(--accent, #ffffff) 22%, #05060f) 0%,
+    #05060f 70%
+  );
+}
+
+.hero-section .hero-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-section .content {
+  position: relative;
+  transform-origin: center center;
+}
+
+.hero-section .container-full {
+  position: absolute;
+  inset: 0;
+  perspective: 1000px;
+  overflow: hidden;
+  border-radius: 24px;
+}
+
+/* animated hue wash over everything */
+.hero-section .animated.hue {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(
+    120deg,
+    color-mix(in srgb, var(--accent, #fff) 12%, transparent),
+    transparent 60%
+  );
+  animation: filter-animation 12s ease-in-out infinite;
+}
+
+.hero-section .accent-wash {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: radial-gradient(
+    circle at 50% 120%,
+    color-mix(in srgb, var(--accent, #fff) 30%, transparent),
+    transparent 60%
+  );
+  animation: text-glow 6s ease-in-out infinite;
+}
+
+/* 3D cubes carrying the scrolling name marquees */
+.cube-stage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-style: preserve-3d;
+}
+
+.hero-section .cube {
+  position: relative;
+  width: 1000px;
+  height: 562px;
+  transform-style: preserve-3d;
+}
+
+.hero-section .face {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.hero-section .face.text {
+  display: flex;
+  align-items: center;
+}
+
+.hero-section .face.text p {
+  white-space: nowrap;
+  margin: 0;
+  font-size: 90px;
+  line-height: 1;
+  color: color-mix(in srgb, var(--accent, #fff) 75%, white);
+  opacity: 0.35;
+  animation: text-glow 5s ease-in-out infinite;
+}
+
+/* names scroll on three faces at different depths/speeds */
+.hero-section .face.left {
+  transform: translateZ(-220px) rotateY(14deg);
+}
+.hero-section .face.left p {
+  animation: left 700s linear infinite, text-glow 5s ease-in-out infinite;
+}
+
+.hero-section .face.right {
+  transform: translateZ(-420px) rotateY(-14deg);
+  opacity: 0.7;
+}
+.hero-section .face.right p {
+  animation: right 800s linear infinite, text-glow 5s ease-in-out infinite;
+}
+
+.hero-section .face.back {
+  transform: translateZ(-620px);
+  opacity: 0.45;
+}
+.hero-section .face.back p {
+  animation: back 900s linear infinite, text-glow 5s ease-in-out infinite;
+}
+
+.hero-section .face.top,
+.hero-section .face.bottom,
+.hero-section .face.front {
+  pointer-events: none;
+}
+
+/* mirrored, dimmed copy below for a floor-reflection feel */
+.hero-section .container-reflect {
+  transform: rotateX(180deg) translateY(-562px);
+  transform-origin: center bottom;
+  opacity: 0.12;
+  filter: blur(2px);
+  mask-image: linear-gradient(to bottom, transparent 40%, black 100%);
+}
+
+/* character names in the marquee use Indiana Jonas exclusively */
+.name-text p {
+  font-family: "Indiana Jonas", cursive;
+}
+
+/* card slot centered above everything in the stage */
+.hero-section .card-slot {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

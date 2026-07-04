@@ -1,3 +1,3 @@
  # Character Unlock Animation Test Bench An interactive test environment for a 12-character suite reveal sequence utilizing Three.js WebGL fragment shaders, continuous scrolling typography background, and interactive 3D Glare Cards. 
  
- ## Structure - `/components/ui` - Primitive components (Shader lines, Glare Card, 3D Background) - `/public/fonts` - Target directory for the Indiana Jonas custom typography - `/public/character-images` - Directory containing character image assets (`kiko.png`, `patty.png`, etc.) 
+ ## Structure - `/components/ui` - Primitive components (Shader lines, Glare Card, 3D Background) - `/public/fonts` - Target directory for the Indiana Jonas custom typography - `/public/characterImages` - Directory containing character image assets (`kiko.png`, `patty.png`, etc.) 
