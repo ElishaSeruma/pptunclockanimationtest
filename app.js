@@ -163,14 +163,28 @@ const CHARACTERS = [
   },
 ];
 
+// persona animal/type labels for the dashboard tiles
+const TYPES = {
+  kami: "Computer program",
+  patty: "Parrot teen",
+  bram: "Human teen",
+  atlas: "Human adult",
+  vela: "Parrot adult",
+  suki: "Cat teen",
+  kiko: "Monkey teen",
+  nori: "Human adult",
+  miso: "Frog teen",
+  rune: "Owl teen",
+  tavo: "Turtle adult",
+  zeni: "Human adult",
+};
+
 // derived asset paths + shader tint (normalize hex so the brightest
 // channel hits 1.0 — keeps the hue but glows on a dark screen)
-const ICONS_WITHOUT_FILE = new Set(["kami"]); // no transparent icon supplied
 for (const c of CHARACTERS) {
+  c.type = TYPES[c.id] || "";
   c.image = `public/characterImages/${c.id}.png`;
-  c.icon = ICONS_WITHOUT_FILE.has(c.id)
-    ? c.image
-    : `public/transparent_icons/${c.id}.png`;
+  c.icon = `public/transparent_icons/${c.id}.png`;
   const r = parseInt(c.accent.slice(1, 3), 16) / 255;
   const g = parseInt(c.accent.slice(3, 5), 16) / 255;
   const b = parseInt(c.accent.slice(5, 7), 16) / 255;
@@ -446,10 +460,13 @@ const el = {
   cubeReflect: document.getElementById("cubeReflect"),
   cardImage: document.getElementById("cardImage"),
   bigName: document.getElementById("bigName"),
-  posterName: document.getElementById("posterNameText"),
+  pill: document.getElementById("pill"),
   pillScroll: document.getElementById("pillScroll"),
   randomBtn: document.getElementById("randomBtn"),
   muteBtn: document.getElementById("muteBtn"),
+  backBtn: document.getElementById("backBtn"),
+  dashGrid: document.getElementById("dashGrid"),
+  dashCount: document.getElementById("dashCount"),
 };
 
 let timer = null;
@@ -484,12 +501,14 @@ function buildMarquee(target, name) {
 function unlock(c) {
   if (timer) clearTimeout(timer);
   current = c;
-  document.getElementById("app").style.setProperty("--accent", c.accent);
+  document.getElementById("app").style.setProperty("--char-accent", c.accent);
 
   // phase: shader reveal + persona phrase
   el.idle.hidden = true;
   el.cardPhase.hidden = true;
   el.reveal.hidden = false;
+  el.pill.hidden = false;
+  el.backBtn.hidden = false;
 
   el.phrase.textContent = pickPhrase(c);
   el.phrase.style.animation = "none";
@@ -512,7 +531,6 @@ function unlock(c) {
     el.cardImage.src = c.image;
     el.cardImage.alt = c.name;
     el.bigName.textContent = c.name;
-    el.posterName.textContent = c.name;
 
     el.cardPhase.hidden = false;
     scaleHero();
@@ -520,7 +538,20 @@ function unlock(c) {
 
     unlocked.add(c.id);
     markActive(c, true);
+    refreshDashboard();
   }, REVEAL_MS);
+}
+
+function goHome() {
+  if (timer) clearTimeout(timer);
+  shader.stop();
+  el.reveal.hidden = true;
+  el.cardPhase.hidden = true;
+  el.pill.hidden = true;
+  el.backBtn.hidden = true;
+  el.idle.hidden = false;
+  current = null;
+  markActive({ id: null }, false);
 }
 
 // responsive scaling of the fixed-size 1000x562 marquee stage
@@ -578,3 +609,53 @@ el.muteBtn.addEventListener("click", () => {
   const muted = sfx.toggle();
   el.muteBtn.textContent = muted ? "🔇" : "🔊";
 });
+
+el.backBtn.addEventListener("click", () => {
+  sfx.click();
+  goHome();
+});
+
+// ---------- dashboard ----------
+function refreshDashboard() {
+  el.dashCount.textContent = `${unlocked.size}/${CHARACTERS.length} UNLOCKED`;
+  for (const tile of el.dashGrid.children) {
+    const isUnlocked = unlocked.has(tile.dataset.id);
+    tile.classList.toggle("is-unlocked", isUnlocked);
+    tile.querySelector(".tile-status").textContent = isUnlocked
+      ? "UNLOCKED"
+      : "LOCKED";
+  }
+}
+
+for (const c of CHARACTERS) {
+  const tile = document.createElement("button");
+  tile.className = "dash-tile";
+  tile.dataset.id = c.id;
+  tile.style.setProperty("--char", c.accent);
+
+  const img = document.createElement("img");
+  img.src = c.icon;
+  img.alt = "";
+  img.draggable = false;
+
+  const name = document.createElement("span");
+  name.className = "tile-name"; // Indiana Jonas: character names only
+  name.textContent = c.name;
+
+  const type = document.createElement("span");
+  type.className = "tile-type";
+  type.textContent = c.type;
+
+  const status = document.createElement("span");
+  status.className = "tile-status";
+  status.textContent = "LOCKED";
+
+  tile.append(img, name, type, status);
+  tile.addEventListener("click", () => {
+    sfx.click();
+    unlock(c);
+  });
+  el.dashGrid.appendChild(tile);
+}
+
+refreshDashboard();
